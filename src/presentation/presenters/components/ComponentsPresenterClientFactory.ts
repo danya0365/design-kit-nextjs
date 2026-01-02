@@ -1,14 +1,12 @@
-// ComponentsPresenterClientFactory - Client-side factory
-'use client';
+"use client";
 
-import { MockCategoryRepository, MockComponentRepository } from '@/src/infrastructure/repositories/mock';
-import { ComponentsPresenter } from './ComponentsPresenter';
+import { createClientSupabaseClient } from "@/src/infrastructure/config/supabase-client-client";
+import { ComponentsPresenter } from "./ComponentsPresenter";
 
 export class ComponentsPresenterClientFactory {
   static create(): ComponentsPresenter {
-    const componentRepository = new MockComponentRepository();
-    const categoryRepository = new MockCategoryRepository();
-    return new ComponentsPresenter(componentRepository, categoryRepository);
+    const supabase = createClientSupabaseClient();
+    return new ComponentsPresenter(supabase);
   }
 }
 

@@ -1,4 +1,4 @@
-// Component Detail Barrel Export
-export { ComponentDetailPresenter, type ComponentDetailViewModel } from './ComponentDetailPresenter';
-export { createServerComponentDetailPresenter } from './ComponentDetailPresenterServerFactory';
+export { ComponentDetailPresenter, type ComponentDetail, type ComponentDetailViewModel, type Review } from "./ComponentDetailPresenter";
+export { createClientComponentDetailPresenter } from "./ComponentDetailPresenterClientFactory";
+export { useComponentDetailPresenter } from "./useComponentDetailPresenter";
 

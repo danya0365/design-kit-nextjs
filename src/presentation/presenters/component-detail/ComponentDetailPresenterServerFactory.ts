@@ -1,7 +1,13 @@
-// ComponentDetailPresenterServerFactory
-import { MockComponentRepository } from '@/src/infrastructure/repositories/mock';
-import { ComponentDetailPresenter } from './ComponentDetailPresenter';
+import { createServerSupabaseClient } from "@/src/infrastructure/config/supabase-server-client";
+import { ComponentDetailPresenter } from "./ComponentDetailPresenter";
 
-export function createServerComponentDetailPresenter(): ComponentDetailPresenter {
-  return new ComponentDetailPresenter(new MockComponentRepository());
+export class ComponentDetailPresenterServerFactory {
+  static async create(): Promise<ComponentDetailPresenter> {
+    const supabase = await createServerSupabaseClient();
+    return new ComponentDetailPresenter(supabase);
+  }
+}
+
+export async function createServerComponentDetailPresenter(): Promise<ComponentDetailPresenter> {
+  return ComponentDetailPresenterServerFactory.create();
 }

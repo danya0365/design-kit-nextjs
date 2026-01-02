@@ -1,6 +1,4 @@
-// Components Presenter Barrel Export
-export { ComponentsPresenter, type ComponentsViewModel } from './ComponentsPresenter';
-export { ComponentsPresenterClientFactory, createClientComponentsPresenter } from './ComponentsPresenterClientFactory';
-export { ComponentsPresenterServerFactory, createServerComponentsPresenter } from './ComponentsPresenterServerFactory';
-export { useComponentsPresenter, type ComponentsPresenterActions, type ComponentsPresenterState } from './useComponentsPresenter';
+export { ComponentsPresenter, type Category, type Component, type ComponentsFilters, type ComponentsViewModel } from "./ComponentsPresenter";
+export { createClientComponentsPresenter } from "./ComponentsPresenterClientFactory";
+export { useComponentsPresenter } from "./useComponentsPresenter";
 

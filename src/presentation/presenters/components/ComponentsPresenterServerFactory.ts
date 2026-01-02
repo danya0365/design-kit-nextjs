@@ -1,15 +1,13 @@
-// ComponentsPresenterServerFactory - Server-side factory
-import { MockCategoryRepository, MockComponentRepository } from '@/src/infrastructure/repositories/mock';
-import { ComponentsPresenter } from './ComponentsPresenter';
+import { createServerSupabaseClient } from "@/src/infrastructure/config/supabase-server-client";
+import { ComponentsPresenter } from "./ComponentsPresenter";
 
 export class ComponentsPresenterServerFactory {
-  static create(): ComponentsPresenter {
-    const componentRepository = new MockComponentRepository();
-    const categoryRepository = new MockCategoryRepository();
-    return new ComponentsPresenter(componentRepository, categoryRepository);
+  static async create(): Promise<ComponentsPresenter> {
+    const supabase = await createServerSupabaseClient();
+    return new ComponentsPresenter(supabase);
   }
 }
 
-export function createServerComponentsPresenter(): ComponentsPresenter {
+export async function createServerComponentsPresenter(): Promise<ComponentsPresenter> {
   return ComponentsPresenterServerFactory.create();
 }

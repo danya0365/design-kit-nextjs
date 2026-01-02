@@ -1,2 +1,1 @@
-// Component Detail View Barrel Export
-export { ComponentDetailView } from './ComponentDetailView';
+export { ComponentDetailView } from "./ComponentDetailView";

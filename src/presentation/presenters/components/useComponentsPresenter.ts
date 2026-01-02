@@ -1,11 +1,10 @@
-// useComponentsPresenter - React hook for Components page state management
-'use client';
+"use client";
 
-import type { ComponentFilters } from '@/src/domain/interfaces';
-import { useCallback, useEffect, useState } from 'react';
-import type { ComponentsViewModel } from './ComponentsPresenter';
-import { createClientComponentsPresenter } from './ComponentsPresenterClientFactory';
+import { useCallback, useEffect, useState } from "react";
+import { ComponentsFilters, ComponentsViewModel } from "./ComponentsPresenter";
+import { createClientComponentsPresenter } from "./ComponentsPresenterClientFactory";
 
+// Initialize presenter instance once (singleton pattern)
 const presenter = createClientComponentsPresenter();
 
 export interface ComponentsPresenterState {
@@ -15,14 +14,15 @@ export interface ComponentsPresenterState {
 }
 
 export interface ComponentsPresenterActions {
-  loadData: (page?: number, filters?: ComponentFilters, search?: string) => Promise<void>;
+  loadData: (page?: number, filters?: ComponentsFilters) => Promise<void>;
+  setFilters: (filters: ComponentsFilters) => void;
   setPage: (page: number) => void;
-  setFilters: (filters: ComponentFilters) => void;
-  setSearch: (search: string) => void;
-  clearFilters: () => void;
   setError: (error: string | null) => void;
 }
 
+/**
+ * Custom hook for Components presenter
+ */
 export function useComponentsPresenter(
   initialViewModel?: ComponentsViewModel
 ): [ComponentsPresenterState, ComponentsPresenterActions] {
@@ -31,57 +31,67 @@ export function useComponentsPresenter(
   );
   const [loading, setLoading] = useState(!initialViewModel);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [currentFilters, setCurrentFilters] = useState<ComponentFilters>({});
-  const [searchQuery, setSearchQuery] = useState('');
+  const [currentFilters, setCurrentFilters] = useState<ComponentsFilters>(
+    initialViewModel?.filters || {}
+  );
+  const [currentPage, setCurrentPage] = useState(initialViewModel?.page || 1);
 
-  const loadData = useCallback(async (
-    page: number = currentPage,
-    filters: ComponentFilters = currentFilters,
-    search: string = searchQuery
-  ) => {
+  /**
+   * Load data from presenter
+   */
+  const loadData = useCallback(async (page?: number, filters?: ComponentsFilters) => {
+    const targetPage = page ?? currentPage;
+    const targetFilters = filters ?? currentFilters;
+
     setLoading(true);
     setError(null);
 
     try {
-      const newViewModel = await presenter.getViewModel(page, 12, filters, search);
+      const newViewModel = await presenter.getViewModel(targetPage, 12, targetFilters);
       setViewModel(newViewModel);
-      setCurrentPage(page);
-      setCurrentFilters(filters);
-      setSearchQuery(search);
+      setCurrentPage(targetPage);
+      setCurrentFilters(targetFilters);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
       setError(errorMessage);
-      console.error('Error loading components:', err);
+      console.error("Error loading components:", err);
     } finally {
       setLoading(false);
     }
-  }, [currentPage, currentFilters, searchQuery]);
+  }, [currentPage, currentFilters]);
 
-  const setPage = useCallback((page: number) => {
-    loadData(page, currentFilters, searchQuery);
-  }, [loadData, currentFilters, searchQuery]);
-
-  const setFilters = useCallback((filters: ComponentFilters) => {
-    loadData(1, filters, searchQuery);
-  }, [loadData, searchQuery]);
-
-  const setSearch = useCallback((search: string) => {
-    loadData(1, currentFilters, search);
-  }, [loadData, currentFilters]);
-
-  const clearFilters = useCallback(() => {
-    loadData(1, {}, '');
+  /**
+   * Set filters and reload
+   */
+  const setFilters = useCallback((filters: ComponentsFilters) => {
+    loadData(1, filters);
   }, [loadData]);
 
+  /**
+   * Set page and reload
+   */
+  const setPage = useCallback((page: number) => {
+    loadData(page, currentFilters);
+  }, [loadData, currentFilters]);
+
+  // Load data on mount if no initial data
   useEffect(() => {
     if (!initialViewModel) {
       loadData();
     }
-  }, []);
+  }, [initialViewModel, loadData]);
 
   return [
-    { viewModel, loading, error },
-    { loadData, setPage, setFilters, setSearch, clearFilters, setError },
+    {
+      viewModel,
+      loading,
+      error,
+    },
+    {
+      loadData,
+      setFilters,
+      setPage,
+      setError,
+    },
   ];
 }

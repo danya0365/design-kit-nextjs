@@ -3,6 +3,7 @@ import { createServerComponentDetailPresenter } from "@/src/presentation/present
 import type { Metadata } from "next";
 import Link from "next/link";
 
+// Tell Next.js this is a dynamic page
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
@@ -10,37 +11,53 @@ interface ComponentDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+/**
+ * Generate metadata for the page
+ */
 export async function generateMetadata({
   params,
 }: ComponentDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const presenter = createServerComponentDetailPresenter();
-  const viewModel = await presenter.getViewModel(resolvedParams.id);
-  return presenter.generateMetadata(viewModel.component);
+  const presenter = await createServerComponentDetailPresenter();
+
+  try {
+    return presenter.generateMetadata(resolvedParams.id);
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+
+    return {
+      title: "Component | Design Kit",
+      description: "View component details",
+    };
+  }
 }
 
-export default async function ComponentDetailPage({
-  params,
-}: ComponentDetailPageProps) {
+/**
+ * Component Detail page - Server Component for SEO optimization
+ */
+export default async function ComponentDetailPage({ params }: ComponentDetailPageProps) {
   const resolvedParams = await params;
-  const presenter = createServerComponentDetailPresenter();
+  const presenter = await createServerComponentDetailPresenter();
 
   try {
     const viewModel = await presenter.getViewModel(resolvedParams.id);
-    return <ComponentDetailView viewModel={viewModel} />;
+
+    return <ComponentDetailView componentId={resolvedParams.id} initialViewModel={viewModel} />;
   } catch (error) {
     console.error("Error fetching component:", error);
 
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             เกิดข้อผิดพลาด
           </h1>
-          <p className="text-muted mb-4">ไม่สามารถโหลดข้อมูล Component ได้</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            ไม่สามารถโหลด Component ได้
+          </p>
           <Link
             href="/components"
-            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
           >
             กลับไปหน้า Components
           </Link>
