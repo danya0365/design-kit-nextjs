@@ -1,5 +1,6 @@
 import { LayoutProvider } from "@/src/presentation/components/providers/LayoutProvider";
 import { ThemeProvider } from "@/src/presentation/components/providers/ThemeProvider";
+import { KeyboardShortcutsModal } from "@/src/presentation/components/ui/KeyboardShortcutsModal";
 import { SearchModal } from "@/src/presentation/components/ui/SearchModal";
 import { ToastContainer } from "@/src/presentation/components/ui/ToastContainer";
 import type { Metadata } from "next";
@@ -23,6 +24,7 @@ export default function RootLayout({
             {children}
             <ToastContainer />
             <SearchModal />
+            <KeyboardShortcutsModal />
           </LayoutProvider>
         </ThemeProvider>
       </body>
