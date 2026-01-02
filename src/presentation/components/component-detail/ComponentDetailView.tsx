@@ -3,9 +3,12 @@
 
 import type { Platform, StyleSystem } from '@/src/domain/entities';
 import type { ComponentDetailViewModel } from '@/src/presentation/presenters/component-detail/ComponentDetailPresenter';
+import { useCartStore } from '@/src/presentation/stores/cartStore';
+import { useFavoritesStore } from '@/src/presentation/stores/favoritesStore';
 import { useLayoutStore } from '@/src/presentation/stores/layoutStore';
+import { useToastStore } from '@/src/presentation/stores/toastStore';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ComponentDetailViewProps {
   viewModel: ComponentDetailViewModel;
@@ -17,6 +20,16 @@ export function ComponentDetailView({ viewModel }: ComponentDetailViewProps) {
   const [selectedPlatform, setSelectedPlatform] = useState<Platform>('react');
   const [selectedStyle, setSelectedStyle] = useState<StyleSystem>('tailwind');
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Store hooks
+  const { addItem, isInCart } = useCartStore();
+  const { toggleFavorite, isFavorite } = useFavoritesStore();
+  const { addToast } = useToastStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!component) {
     if (currentLayout === 'retro') {
@@ -55,9 +68,33 @@ export function ComponentDetailView({ viewModel }: ComponentDetailViewProps) {
     if (exportData) {
       navigator.clipboard.writeText(exportData.codeTemplate);
       setCopied(true);
+      addToast('Code copied to clipboard!', 'success');
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  const handleAddToCart = () => {
+    if (component.isFree) {
+      addToast('Free components can be downloaded directly!', 'info');
+    } else if (isInCart(component.id)) {
+      addToast('Already in cart!', 'warning');
+    } else {
+      addItem(component);
+      addToast(`${component.name} added to cart!`, 'success');
+    }
+  };
+
+  const handleToggleFavorite = () => {
+    toggleFavorite(component.id);
+    const wasFavorite = isFavorite(component.id);
+    addToast(
+      wasFavorite ? 'Removed from favorites' : 'Added to favorites!',
+      wasFavorite ? 'info' : 'success'
+    );
+  };
+
+  const inCart = mounted && isInCart(component.id);
+  const favorited = mounted && isFavorite(component.id);
 
   if (currentLayout === 'retro') {
     return (
@@ -90,6 +127,25 @@ export function ComponentDetailView({ viewModel }: ComponentDetailViewProps) {
               </div>
               <div style={{ marginTop: '8px', fontWeight: 'bold', fontSize: '18px' }}>
                 {component.isFree ? 'FREE' : `$${component.price}`}
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
+                <button
+                  className={`retro-btn ${favorited ? 'retro-btn-primary' : ''}`}
+                  onClick={handleToggleFavorite}
+                >
+                  {favorited ? '❤️ Favorited' : '🤍 Favorite'}
+                </button>
+                {!component.isFree && (
+                  <button
+                    className="retro-btn retro-btn-primary"
+                    onClick={handleAddToCart}
+                    disabled={inCart}
+                  >
+                    {inCart ? '✓ In Cart' : '🛒 Add to Cart'}
+                  </button>
+                )}
               </div>
             </div>
 
@@ -209,6 +265,25 @@ export function ComponentDetailView({ viewModel }: ComponentDetailViewProps) {
 
           <div className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
             {component.isFree ? 'Free' : `$${component.price}`}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 mb-6">
+            <button
+              onClick={handleToggleFavorite}
+              className={`main-btn ${favorited ? 'main-btn-primary' : 'main-btn-secondary'}`}
+            >
+              {favorited ? '❤️ Favorited' : '🤍 Add to Favorites'}
+            </button>
+            {!component.isFree && (
+              <button
+                onClick={handleAddToCart}
+                disabled={inCart}
+                className={`main-btn ${inCart ? 'main-btn-secondary' : 'main-btn-primary'}`}
+              >
+                {inCart ? '✓ In Cart' : '🛒 Add to Cart'}
+              </button>
+            )}
           </div>
 
           {/* Export Options */}

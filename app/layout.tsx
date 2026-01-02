@@ -1,5 +1,7 @@
 import { LayoutProvider } from "@/src/presentation/components/providers/LayoutProvider";
 import { ThemeProvider } from "@/src/presentation/components/providers/ThemeProvider";
+import { SearchModal } from "@/src/presentation/components/ui/SearchModal";
+import { ToastContainer } from "@/src/presentation/components/ui/ToastContainer";
 import type { Metadata } from "next";
 import "../public/styles/index.css";
 
@@ -19,6 +21,8 @@ export default function RootLayout({
         <ThemeProvider>
           <LayoutProvider>
             {children}
+            <ToastContainer />
+            <SearchModal />
           </LayoutProvider>
         </ThemeProvider>
       </body>
