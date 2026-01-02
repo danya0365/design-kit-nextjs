@@ -1,4 +1,5 @@
 // Mock Data Barrel Export
+export * from './blog';
 export * from './categories';
 export * from './collections';
 export * from './components';
