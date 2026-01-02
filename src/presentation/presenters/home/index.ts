@@ -1,6 +1,4 @@
-// Home Presenter Barrel Export
-export { HomePresenter, type HomeViewModel } from './HomePresenter';
-export { HomePresenterClientFactory, createClientHomePresenter } from './HomePresenterClientFactory';
-export { HomePresenterServerFactory, createServerHomePresenter } from './HomePresenterServerFactory';
-export { useHomePresenter, type HomePresenterActions, type HomePresenterState } from './useHomePresenter';
+export { HomePresenter, type Category, type Component, type HomeViewModel } from "./HomePresenter";
+export { createClientHomePresenter } from "./HomePresenterClientFactory";
+export { useHomePresenter } from "./useHomePresenter";
 

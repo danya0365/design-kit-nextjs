@@ -1,9 +1,8 @@
-// useHomePresenter - React hook for Home page state management
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import type { HomeViewModel } from './HomePresenter';
-import { createClientHomePresenter } from './HomePresenterClientFactory';
+import { useCallback, useEffect, useState } from "react";
+import { HomeViewModel } from "./HomePresenter";
+import { createClientHomePresenter } from "./HomePresenterClientFactory";
 
 // Initialize presenter instance once (singleton pattern)
 const presenter = createClientHomePresenter();
@@ -19,6 +18,10 @@ export interface HomePresenterActions {
   setError: (error: string | null) => void;
 }
 
+/**
+ * Custom hook for Home presenter
+ * Provides state management and actions for Home page
+ */
 export function useHomePresenter(
   initialViewModel?: HomeViewModel
 ): [HomePresenterState, HomePresenterActions] {
@@ -28,6 +31,9 @@ export function useHomePresenter(
   const [loading, setLoading] = useState(!initialViewModel);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Load data from presenter
+   */
   const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -36,9 +42,9 @@ export function useHomePresenter(
       const newViewModel = await presenter.getViewModel();
       setViewModel(newViewModel);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
       setError(errorMessage);
-      console.error('Error loading home data:', err);
+      console.error("Error loading home data:", err);
     } finally {
       setLoading(false);
     }
