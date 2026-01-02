@@ -1,14 +1,18 @@
 // MainHeader - Modern header with navigation, theme toggle, and layout switcher
 'use client';
 
+import { useCartStore } from '@/src/presentation/stores/cartStore';
 import { useLayoutStore } from '@/src/presentation/stores/layoutStore';
+import { useUserStore } from '@/src/presentation/stores/userStore';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export function MainHeader() {
   const { theme, setTheme } = useTheme();
-  const { currentLayout, toggleLayout } = useLayoutStore();
+  const { toggleLayout } = useLayoutStore();
+  const cartItemCount = useCartStore((state) => state.getItemCount());
+  const { currentUser, isAuthenticated } = useUserStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -30,7 +34,7 @@ export function MainHeader() {
 
         {/* Navigation */}
         <nav className="main-nav">
-          <Link href="/" className="main-nav-link main-nav-link-active">
+          <Link href="/" className="main-nav-link">
             <span className="main-nav-icon">🏠</span>
             Home
           </Link>
@@ -54,9 +58,9 @@ export function MainHeader() {
           <button 
             onClick={toggleLayout}
             className="main-icon-button"
-            title={`Switch to ${currentLayout === 'main' ? 'Retro' : 'Modern'} Layout`}
+            title="Switch to Retro Layout"
           >
-            {currentLayout === 'main' ? '🖥️' : '✨'}
+            🖥️
           </button>
 
           {/* Theme Toggle */}
@@ -69,19 +73,38 @@ export function MainHeader() {
           </button>
 
           {/* Cart */}
-          <button className="main-icon-button">
+          <Link href="/cart" className="main-icon-button relative">
             🛒
-          </button>
+            {mounted && cartItemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItemCount}
+              </span>
+            )}
+          </Link>
 
           {/* User Actions */}
-          <button className="main-button-outline">
-            Sign In
-          </button>
-          <button className="main-button-primary">
-            Get Started
-          </button>
+          {mounted && isAuthenticated ? (
+            <Link href="/profile" className="flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={currentUser?.avatar}
+                alt={currentUser?.name}
+                className="w-8 h-8 rounded-full"
+              />
+            </Link>
+          ) : (
+            <>
+              <Link href="/profile" className="main-button-outline">
+                Sign In
+              </Link>
+              <Link href="/pricing" className="main-button-primary">
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
   );
 }
+
