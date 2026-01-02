@@ -45,6 +45,7 @@ export function ProfileView({ initialViewModel }: ProfileViewProps) {
             <div className="retro-groupbox">
               <span className="retro-groupbox-title">🔗 Quick Links</span>
               <div style={{ padding: "8px", display: "flex", gap: "4px", flexWrap: "wrap" }}>
+                <Link href="/dashboard"><button className="retro-btn retro-btn-primary">📊 Dashboard</button></Link>
                 <Link href="/favorites"><button className="retro-btn">❤️ Favorites</button></Link>
                 <Link href="/downloads"><button className="retro-btn">📥 Downloads</button></Link>
                 <Link href="/settings"><button className="retro-btn">⚙️ Settings</button></Link>
@@ -74,7 +75,8 @@ export function ProfileView({ initialViewModel }: ProfileViewProps) {
       </div>
       <div className="main-card">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Links</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <Link href="/dashboard" className="main-btn main-btn-primary text-center">📊 Dashboard</Link>
           <Link href="/favorites" className="main-btn main-btn-secondary text-center">❤️ Favorites</Link>
           <Link href="/downloads" className="main-btn main-btn-secondary text-center">📥 Downloads</Link>
           <Link href="/cart" className="main-btn main-btn-secondary text-center">🛒 Cart</Link>

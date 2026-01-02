@@ -46,6 +46,10 @@ export function MainHeader() {
             <span className="main-nav-icon">👥</span>
             Creators
           </Link>
+          <Link href="/dashboard" className="main-nav-link">
+            <span className="main-nav-icon">📊</span>
+            Dashboard
+          </Link>
           <Link href="/pricing" className="main-nav-link">
             <span className="main-nav-icon">💰</span>
             Pricing
